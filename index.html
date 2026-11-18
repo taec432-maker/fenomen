@@ -21,6 +21,7 @@
   .b1{width:220px;height:220px;left:-60px;top:12%}.b2{width:140px;height:140px;right:-30px;top:45%;animation-delay:-5s}.b3{width:90px;height:90px;left:20%;bottom:6%;animation-delay:-9s}
   @keyframes float{50%{transform:translateY(-30px) scale(1.06)}}
   main{width:100%;max-width:440px;position:relative;z-index:1;text-align:center}
+  body{position:relative}
 
   .lang{display:flex;justify-content:flex-end;margin-bottom:4px}
   .lang button{font:700 13px/1 inherit;font-family:inherit;color:var(--muted);background:var(--card);border:1px solid rgba(255,255,255,.14);padding:8px 13px;cursor:pointer}
@@ -66,18 +67,62 @@
   .live-btn .ic{background:linear-gradient(135deg,#ff2d55,#ff7a00)}
   .tiktok .ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}.yt .ic{background:#ff0033}.tw .ic{background:#9146ff}.tg .ic{background:#27a7e7}
 
+
+  /* ===== коллаж эффектов ===== */
+  .fx-sub{margin:-4px auto 14px;color:var(--muted);font-size:14px}
+  .fx{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{position:relative;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#1d1030;
+        border:1px solid rgba(255,201,51,.28);box-shadow:0 6px 18px rgba(0,0,0,.35);transform:translateZ(0)}
+  .tile video,.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .tile::after{content:"";position:absolute;inset:auto 0 0 0;height:42%;background:linear-gradient(transparent,rgba(10,4,20,.88));pointer-events:none}
+  .tile .lab{position:absolute;left:8px;right:8px;bottom:9px;z-index:1;text-align:left;font-weight:800;font-size:14px;line-height:1.2;
+             text-shadow:0 1px 3px rgba(0,0,0,.8)}
+  .tile .lab b{display:inline-block;margin-right:4px}
+  .tile.wide{grid-column:span 2;aspect-ratio:16/10}
+  .tile .badge{position:absolute;top:8px;left:8px;z-index:1;font-size:11px;font-weight:800;letter-spacing:.5px;padding:4px 8px;border-radius:999px;
+               background:rgba(230,30,60,.9);color:#fff}
+  @media (min-width:420px){.tile .lab{font-size:15px}}
+
+  /* ===== видео-фон в шапке ===== */
+  .hero-bg{position:absolute;left:0;right:0;top:0;height:560px;overflow:hidden;z-index:0;pointer-events:none;
+           -webkit-mask-image:linear-gradient(#000 35%,transparent);mask-image:linear-gradient(#000 35%,transparent)}
+  .hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.5;transform:scale(1.15);filter:blur(6px)}
+  /* ===== перелив FENOMEN ===== */
+  h1.shine-text{background:linear-gradient(110deg,#ffb300 0%,#ffc933 30%,#fff7d1 45%,#ffc933 60%,#ff9f1c 100%);background-size:250% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 0 18px rgba(255,201,51,.45));
+    animation:shimmer 3.5s ease-in-out infinite}
+  @keyframes shimmer{0%{background-position:100% 0}100%{background-position:-50% 0}}
+  /* ===== искры вокруг аватарки ===== */
+  .ava-wrap{position:relative;width:124px;margin:6px auto 0}
+  .spark{position:absolute;color:#ffe08a;font-size:14px;line-height:1;opacity:0;animation:twinkle 2.4s ease-in-out infinite;text-shadow:0 0 8px #ffc933}
+  .spark:nth-child(1){left:-18px;top:18px;animation-delay:0s}.spark:nth-child(2){right:-16px;top:6px;font-size:18px;animation-delay:.6s}
+  .spark:nth-child(3){right:-24px;bottom:22px;animation-delay:1.2s}.spark:nth-child(4){left:-24px;bottom:8px;font-size:18px;animation-delay:1.8s}
+  .spark:nth-child(5){left:50%;top:-16px;animation-delay:.9s}.spark:nth-child(6){left:58%;bottom:-14px;font-size:11px;animation-delay:1.5s}
+  @keyframes twinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(45deg)}}
+  .ava-wrap .ava{margin:0}
+  /* ===== плашка эфира ===== */
+  a.live{text-decoration:none;cursor:default;pointer-events:none}
+  a.live.on{pointer-events:auto;cursor:pointer;background:#ff2d55;border-color:#ff2d55;color:#fff;font-size:15px;padding:8px 16px;
+            box-shadow:0 0 0 0 rgba(255,45,85,.6);animation:livepulse 1.6s infinite}
+  a.live.on .dot{background:#fff}
+  @keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(255,45,85,.55)}70%,100%{box-shadow:0 0 0 14px rgba(255,45,85,0)}}
+  /* ===== конфетти ===== */
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
   .hide{display:none!important}
   footer{margin-top:28px;color:rgba(255,255,255,.35);font-size:12px}
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
+<div class="hero-bg" aria-hidden="true"><video id="heroVid" data-src="clips/hero.mp4" poster="clips/hero.jpg" muted loop playsinline preload="none"></video></div>
+<canvas id="confetti"></canvas>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 <main>
   <div class="lang"><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
-  <div class="ava"><img src="avatar.jpg" alt="FENOMEN"></div>
-  <h1>FENOMEN</h1>
-  <div class="live"><span class="dot"></span><span data-i="live">Стримы каждый день в TikTok</span></div>
+  <div class="ava-wrap"><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span>
+    <div class="ava"><img src="avatar.jpg" alt="FENOMEN"></div></div>
+  <h1 class="shine-text">FENOMEN</h1>
+  <a class="live" id="liveBadge" href="https://www.tiktok.com/@_heart995/live" target="_blank" rel="noopener"><span class="dot"></span><span id="liveText" data-i="live">Стримы каждый день в TikTok</span></a>
   <p class="bio" data-i="bio">Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире</p>
 
   <!-- ДОНАТЫ. Порядок: PayPal, Карта, Монобанк, Tipply. Кнопка без ссылки (см. LINKS в скрипте ниже) скрывается сама. -->
@@ -96,6 +141,33 @@
       <span class="shine"></span><span class="ic">T</span>
       <span class="t"><span data-i="tipply">Донат через Tipply</span><small data-i="tipplyS">Карта, PayPal, BLIK · сообщение появится на стриме</small></span><span class="arr">›</span></a>
   </nav>
+
+
+  <!-- КОЛЛАЖ: что происходит на эфире (ролики в папке clips/) -->
+  <div class="sec"><span data-i="fxT">Что происходит на эфире</span></div>
+  <p class="fx-sub" data-i="fxS">Каждый эффект запускают зрители</p>
+  <div class="fx" id="fx">
+    <div class="tile"><video data-src="clips/lightning.mp4" poster="clips/lightning.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>⚡</b><span data-i="fx1"></span></div></div>
+    <div class="tile"><video data-src="clips/bucket.mp4" poster="clips/bucket.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>🪣</b><span data-i="fx2"></span></div></div>
+    <div class="tile"><video data-src="clips/roses.mp4" poster="clips/roses.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>🌹</b><span data-i="fx3"></span></div></div>
+    <div class="tile"><video data-src="clips/ufo.mp4" poster="clips/ufo.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>🛸</b><span data-i="fx4"></span></div></div>
+    <div class="tile"><video data-src="clips/fire.mp4" poster="clips/fire.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>🧨</b><span data-i="fx5"></span></div></div>
+    <div class="tile"><video data-src="clips/push.mp4" poster="clips/push.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>👋</b><span data-i="fx6"></span></div></div>
+    <div class="tile"><video data-src="clips/pan.mp4" poster="clips/pan.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>🍳</b><span data-i="fx7"></span></div></div>
+    <div class="tile"><video data-src="clips/whale.mp4" poster="clips/whale.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>🐋</b><span data-i="fx8"></span></div></div>
+    <div class="tile"><video data-src="clips/party.mp4" poster="clips/party.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>🪩</b><span data-i="fx9"></span></div></div>
+    <div class="tile"><video data-src="clips/legs.mp4" poster="clips/legs.jpg" muted loop playsinline preload="none"></video>
+      <div class="lab"><b>🦵</b><span data-i="fx10"></span></div></div>
+  </div>
 
   <div class="sec"><span data-i="follow">Мои страницы</span></div>
   <nav class="links">
@@ -122,15 +194,15 @@ var LINKS = {
 };
 
 var TXT = {
-  ru:{live:"Стримы каждый день в TikTok",bio:"Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире",
+  ru:{live:"Стримы каждый день в TikTok",liveNow:"Сейчас в эфире — смотреть",bio:"Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире",
       donate:"Донат",paypal:"Донат через PayPal",paypalS:"Карты и счёт PayPal",card:"Донат картой",cardS:"Нажми, чтобы скопировать номер · •••• 0408",cardOk:"Номер скопирован ✓",
       mono:"Донат Монобанк",monoS:"Банка Монобанка · можно картой любого банка",tipply:"Донат через Tipply",tipplyS:"Карта, PayPal, BLIK · сообщение появится на стриме",
-      follow:"Мои страницы",watch:"Смотреть эфир",watchS:"Подарки управляют стримером",ytS:"@fenomen_stream · шортсы со стримов",
+      follow:"Мои страницы",fxT:"Что происходит на эфире",fxS:"Каждый эффект запускают зрители",fx1:"Молния и скелет",fx2:"Ведро на голову",fx3:"Дождь из роз",fx4:"НЛО похищает",fx5:"Петарды",fx6:"Толчок — улетаю",fx7:"Удар сковородкой",fx8:"Кит",fx9:"Вечеринка",fx10:"Ноги в пляс",watch:"Смотреть эфир",watchS:"Подарки управляют стримером",ytS:"@fenomen_stream · шортсы со стримов",
       tgS:"Новости и анонсы стримов",foot:"© FENOMEN · Спасибо, что ты с нами ❤️",title:"FENOMEN — стримы, донаты и соцсети"},
-  en:{live:"Live every day on TikTok",bio:"Interactive stream: viewers influence the streamer, interact with them and control them live",
+  en:{live:"Live every day on TikTok",liveNow:"LIVE now — watch",bio:"Interactive stream: viewers influence the streamer, interact with them and control them live",
       donate:"Donate",paypal:"Donate with PayPal",paypalS:"Cards or PayPal balance",card:"Donate by card",cardS:"Tap to copy card number · •••• 0408",cardOk:"Card number copied ✓",
       mono:"Donate via Monobank",monoS:"Monobank jar (Ukraine)",tipply:"Donate via Tipply",tipplyS:"Card, PayPal, BLIK · your message shows on stream",
-      follow:"Follow me",watch:"Watch live",watchS:"Gifts control the streamer",ytS:"@fenomen_stream · stream shorts",
+      follow:"Follow me",fxT:"What happens on stream",fxS:"Every effect is triggered by viewers",fx1:"Lightning & skeleton",fx2:"Bucket on the head",fx3:"Rain of roses",fx4:"UFO abduction",fx5:"Firecrackers",fx6:"Push — I fly away",fx7:"Frying pan hit",fx8:"Whale",fx9:"Party",fx10:"Dancing legs",watch:"Watch live",watchS:"Gifts control the streamer",ytS:"@fenomen_stream · stream shorts",
       tgS:"News and stream announcements",foot:"© FENOMEN · Thanks for being here ❤️",title:"FENOMEN — live streams, donate & socials"}
 };
 
@@ -170,6 +242,58 @@ var TXT = {
     b.addEventListener('click',function(){var l=b.getAttribute('data-lang'); try{localStorage.setItem('lang',l)}catch(e){} apply(l)});
   });
   apply(pick());
+
+  // 3) коллаж: ролики грузятся и играют только когда видны на экране (экономит трафик и батарею)
+  var vids=[].slice.call(document.querySelectorAll('#fx video'));
+  var calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function start(v){ if(!v.src){v.src=v.getAttribute('data-src')} var p=v.play(); if(p&&p.catch)p.catch(function(){}) }
+  // 4) видео-фон шапки
+  var hv=document.getElementById('heroVid');
+  if(!calm && hv){ hv.src=hv.getAttribute('data-src'); var hp=hv.play(); if(hp&&hp.catch)hp.catch(function(){}) }
+
+  // 5) «Сейчас в эфире»: статус пишет проверка на GitHub каждые ~10 минут в status.json
+  var LIVE_URL='https://raw.githubusercontent.com/taec432-maker/fenomen/main/status.json';
+  function setLive(on){
+    var b=document.getElementById('liveBadge'), t=document.getElementById('liveText');
+    b.classList.toggle('on',!!on); t.setAttribute('data-i', on?'liveNow':'live');
+    var l=document.documentElement.lang==='en'?'en':'ru'; t.textContent=TXT[l][on?'liveNow':'live'];
+  }
+  function checkLive(){
+    fetch(LIVE_URL+'?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+      var fresh = j && j.checked && (Date.now()-Date.parse(j.checked) < 40*60*1000); // старше 40 мин — не верим
+      setLive(j && j.live && fresh);
+    }).catch(function(){ setLive(false) });
+  }
+  checkLive(); setInterval(checkLive, 120000);
+
+  // 6) конфетти при нажатии на кнопки доната
+  var cv=document.getElementById('confetti'), cx=cv.getContext('2d'), parts=[], raf=0;
+  function fit(){ cv.width=innerWidth*devicePixelRatio; cv.height=innerHeight*devicePixelRatio }
+  fit(); addEventListener('resize',fit);
+  function boom(x,y){
+    if(calm) return;
+    var cols=['#ffc933','#ff2d55','#4fd1ff','#ffffff','#a66bff','#3ee08a'];
+    for(var i=0;i<90;i++){ var a=Math.random()*Math.PI*2, v=4+Math.random()*7;
+      parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-5,r:4+Math.random()*5,c:cols[i%cols.length],rot:Math.random()*6,vr:(Math.random()-.5)*.4,life:1}) }
+    if(!raf) raf=requestAnimationFrame(tick);
+  }
+  function tick(){
+    var k=devicePixelRatio; cx.clearRect(0,0,cv.width,cv.height);
+    parts.forEach(function(p){ p.x+=p.vx; p.y+=p.vy; p.vy+=.35; p.vx*=.98; p.rot+=p.vr; p.life-=.012;
+      cx.save(); cx.globalAlpha=Math.max(p.life,0); cx.translate(p.x*k,p.y*k); cx.rotate(p.rot); cx.fillStyle=p.c;
+      cx.fillRect(-p.r*k,-p.r*k*.45,p.r*2*k,p.r*.9*k); cx.restore() });
+    parts=parts.filter(function(p){return p.life>0 && p.y<innerHeight+40});
+    raf = parts.length ? requestAnimationFrame(tick) : 0;
+    if(!raf) cx.clearRect(0,0,cv.width,cv.height);
+  }
+  document.querySelectorAll('#donLinks a.don').forEach(function(a){
+    a.addEventListener('click',function(e){ var r=a.getBoundingClientRect(); boom(e.clientX||r.left+r.width/2, e.clientY||r.top+r.height/2) });
+  });
+
+  if(!calm && 'IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){start(e.target)} else {e.target.pause()} })},{rootMargin:'120px 0px'});
+    vids.forEach(function(v){io.observe(v)});
+  } else if(!calm){ vids.forEach(start) }
 })();
 </script>
 </body>
