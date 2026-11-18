@@ -73,7 +73,12 @@
   .fx{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .tile{position:relative;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#1d1030;
         border:1px solid rgba(255,201,51,.28);box-shadow:0 6px 18px rgba(0,0,0,.35);transform:translateZ(0)}
-  .tile video,.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .tile video,.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;transition:opacity .35s ease}
+  .tile video.fade{opacity:0}
+  .tile video::-webkit-media-controls{display:none!important}
+  .tile video::-webkit-media-controls-start-playback-button{display:none!important}
+  .tile{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .tile .lab span,.tile .lab b{transition:opacity .35s ease}
   .tile::after{content:"";position:absolute;inset:auto 0 0 0;height:42%;background:linear-gradient(transparent,rgba(10,4,20,.88));pointer-events:none}
   .tile .lab{position:absolute;left:8px;right:8px;bottom:9px;z-index:1;text-align:left;font-weight:800;font-size:14px;line-height:1.2;
              text-shadow:0 1px 3px rgba(0,0,0,.8)}
@@ -147,26 +152,10 @@
   <div class="sec"><span data-i="fxT">Что происходит на эфире</span></div>
   <p class="fx-sub" data-i="fxS">Каждый эффект запускают зрители</p>
   <div class="fx" id="fx">
-    <div class="tile"><video data-src="clips/lightning.mp4" poster="clips/lightning.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>⚡</b><span data-i="fx1"></span></div></div>
-    <div class="tile"><video data-src="clips/bucket.mp4" poster="clips/bucket.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>🪣</b><span data-i="fx2"></span></div></div>
-    <div class="tile"><video data-src="clips/roses.mp4" poster="clips/roses.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>🌹</b><span data-i="fx3"></span></div></div>
-    <div class="tile"><video data-src="clips/ufo.mp4" poster="clips/ufo.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>🛸</b><span data-i="fx4"></span></div></div>
-    <div class="tile"><video data-src="clips/fire.mp4" poster="clips/fire.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>🧨</b><span data-i="fx5"></span></div></div>
-    <div class="tile"><video data-src="clips/push.mp4" poster="clips/push.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>👋</b><span data-i="fx6"></span></div></div>
-    <div class="tile"><video data-src="clips/pan.mp4" poster="clips/pan.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>🍳</b><span data-i="fx7"></span></div></div>
-    <div class="tile"><video data-src="clips/whale.mp4" poster="clips/whale.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>🐋</b><span data-i="fx8"></span></div></div>
-    <div class="tile"><video data-src="clips/party.mp4" poster="clips/party.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>🪩</b><span data-i="fx9"></span></div></div>
-    <div class="tile"><video data-src="clips/legs.mp4" poster="clips/legs.jpg" muted loop playsinline preload="none"></video>
-      <div class="lab"><b>🦵</b><span data-i="fx10"></span></div></div>
+    <div class="tile"><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><div class="lab"><b></b><span></span></div></div>
+    <div class="tile"><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><div class="lab"><b></b><span></span></div></div>
+    <div class="tile"><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><div class="lab"><b></b><span></span></div></div>
+    <div class="tile"><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><div class="lab"><b></b><span></span></div></div>
   </div>
 
   <div class="sec"><span data-i="follow">Мои страницы</span></div>
@@ -243,10 +232,38 @@ var TXT = {
   });
   apply(pick());
 
-  // 3) коллаж: ролики грузятся и играют только когда видны на экране (экономит трафик и батарею)
-  var vids=[].slice.call(document.querySelectorAll('#fx video'));
+  // 3) коллаж: 4 квадрата, в каждом эффекты сменяют друг друга (без проигрывателя и звука)
   var calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function start(v){ if(!v.src){v.src=v.getAttribute('data-src')} var p=v.play(); if(p&&p.catch)p.catch(function(){}) }
+  var CLIPS=[{n:'fire',e:'🧨',k:'fx5'},{n:'bucket',e:'🪣',k:'fx2'},{n:'roses',e:'🌹',k:'fx3'},{n:'ufo',e:'🛸',k:'fx4'},
+             {n:'lightning',e:'⚡',k:'fx1'},{n:'push',e:'👋',k:'fx6'},{n:'pan',e:'🍳',k:'fx7'},{n:'whale',e:'🐋',k:'fx8'},
+             {n:'party',e:'🪩',k:'fx9'},{n:'legs',e:'🦵',k:'fx10'}];
+  var tiles=[].slice.call(document.querySelectorAll('#fx .tile'));
+  var visible=false;
+  function lang(){return document.documentElement.lang==='en'?'en':'ru'}
+  function setClip(t,idx,play){
+    var c=CLIPS[idx%CLIPS.length], v=t.querySelector('video');
+    t._idx=idx; v.muted=true; v.defaultMuted=true;
+    v.poster='clips/'+c.n+'.jpg';
+    t.querySelector('.lab b').textContent=c.e;
+    var sp=t.querySelector('.lab span'); sp.setAttribute('data-i',c.k); sp.textContent=TXT[lang()][c.k];
+    if(play){ v.src='clips/'+c.n+'.mp4'; var p=v.play(); if(p&&p.catch)p.catch(function(){}) }
+  }
+  tiles.forEach(function(t,i){
+    var v=t.querySelector('video');
+    v.addEventListener('ended',function(){
+      v.classList.add('fade');
+      setTimeout(function(){ setClip(t,t._idx+tiles.length,visible&&!calm); v.classList.remove('fade') },350);
+    });
+    // на всякий случай гасим любые попытки развернуть или нажать
+    ['click','dblclick','touchend','contextmenu'].forEach(function(ev){t.addEventListener(ev,function(e){e.preventDefault()},{passive:false})});
+    setClip(t,i,false);
+  });
+  function playAll(on){ visible=on; tiles.forEach(function(t){ var v=t.querySelector('video');
+    if(on&&!calm){ if(!v.src){setClip(t,t._idx,true)} else {var p=v.play(); if(p&&p.catch)p.catch(function(){})} } else { v.pause() } }) }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ playAll(es[0].isIntersecting) },{rootMargin:'150px 0px'}).observe(document.getElementById('fx'));
+  } else { playAll(true) }
+
   // 4) видео-фон шапки
   var hv=document.getElementById('heroVid');
   if(!calm && hv){ hv.src=hv.getAttribute('data-src'); var hp=hv.play(); if(hp&&hp.catch)hp.catch(function(){}) }
@@ -290,10 +307,6 @@ var TXT = {
     a.addEventListener('click',function(e){ var r=a.getBoundingClientRect(); boom(e.clientX||r.left+r.width/2, e.clientY||r.top+r.height/2) });
   });
 
-  if(!calm && 'IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){start(e.target)} else {e.target.pause()} })},{rootMargin:'120px 0px'});
-    vids.forEach(function(v){io.observe(v)});
-  } else if(!calm){ vids.forEach(start) }
 })();
 </script>
 </body>
