@@ -17,7 +17,7 @@
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
     background:radial-gradient(120% 80% at 50% 0%,var(--bg2) 0%,var(--bg1) 60%) fixed,var(--bg1);
     display:flex;justify-content:center;padding:20px 16px calc(40px + env(safe-area-inset-bottom));overflow-x:hidden}
-  .blob{position:fixed;border-radius:50%;background:var(--gold);opacity:.07;pointer-events:none;animation:float 14s ease-in-out infinite}
+  .blob{position:fixed;border-radius:50%;background:var(--gold);opacity:.035;pointer-events:none;animation:float 14s ease-in-out infinite}
   .b1{width:220px;height:220px;left:-60px;top:12%}.b2{width:140px;height:140px;right:-30px;top:45%;animation-delay:-5s}.b3{width:90px;height:90px;left:20%;bottom:6%;animation-delay:-9s}
   @keyframes float{50%{transform:translateY(-30px) scale(1.06)}}
   main{width:100%;max-width:440px;position:relative;z-index:1;text-align:center}
@@ -28,8 +28,9 @@
   .lang button:first-child{border-radius:10px 0 0 10px}.lang button:last-child{border-radius:0 10px 10px 0;border-left:0}
   .lang button.on{background:var(--gold);color:#1b0f02;border-color:var(--gold)}
 
-  .ava{width:124px;height:124px;margin:6px auto 0;border-radius:50%;padding:5px;background:conic-gradient(var(--gold),#ff8a00,var(--gold2),var(--gold));animation:spin 6s linear infinite}
-  .ava img{width:100%;height:100%;border-radius:50%;display:block;border:4px solid var(--bg1);animation:spin 6s linear infinite reverse}
+  .ava{position:relative;width:124px;height:124px;margin:6px auto 0;border-radius:50%;padding:5px;transform-origin:50% 100%}
+  .ava::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--gold),#ff8a00,var(--gold2),var(--gold));animation:spin 6s linear infinite}
+  .ava img{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;display:block;border:4px solid var(--bg1)}
   @keyframes spin{to{transform:rotate(360deg)}}
   h1{margin-top:14px;font-size:38px;font-weight:900;letter-spacing:2px;color:var(--gold);text-shadow:0 0 24px rgba(255,201,51,.45)}
   .live{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:6px 14px;border-radius:999px;background:rgba(230,30,60,.15);border:1px solid rgba(230,30,60,.6);font-size:14px;font-weight:700;color:#ff6b81}
@@ -86,7 +87,16 @@
                background:rgba(230,30,60,.9);color:#fff}
   @media (min-width:420px){.tile .lab{font-size:15px}}
 
-  /* ===== видео-фон в шапке ===== */
+  /* ===== мягкий фон: медленно перетекающие свечения ===== */
+  .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .aurora i{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;will-change:transform}
+  .aurora i:nth-child(1){width:70vmax;height:70vmax;left:-25vmax;top:-30vmax;background:radial-gradient(circle,#7b2cbf 0%,transparent 65%);animation:drift1 26s ease-in-out infinite alternate}
+  .aurora i:nth-child(2){width:55vmax;height:55vmax;right:-22vmax;top:5vmax;background:radial-gradient(circle,rgba(255,180,40,.55) 0%,transparent 65%);animation:drift2 32s ease-in-out infinite alternate}
+  .aurora i:nth-child(3){width:60vmax;height:60vmax;left:-10vmax;bottom:-35vmax;background:radial-gradient(circle,#c2185b 0%,transparent 65%);opacity:.35;animation:drift3 38s ease-in-out infinite alternate}
+  @keyframes drift1{to{transform:translate(18vmax,12vmax) scale(1.15)}}
+  @keyframes drift2{to{transform:translate(-14vmax,18vmax) scale(.9)}}
+  @keyframes drift3{to{transform:translate(16vmax,-12vmax) scale(1.1)}}
+  /* (старый видео-фон отключён) */
   .hero-bg{position:absolute;left:0;right:0;top:0;height:560px;overflow:hidden;z-index:0;pointer-events:none;
            -webkit-mask-image:linear-gradient(#000 35%,transparent);mask-image:linear-gradient(#000 35%,transparent)}
   .hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.5;transform:scale(1.15);filter:blur(6px)}
@@ -123,29 +133,39 @@
   #fxLayer .e{position:absolute;left:0;top:0;line-height:1;will-change:transform,opacity}
   .flash{position:fixed;inset:0;background:#fff;pointer-events:none;z-index:59}
   .comic{position:absolute;font-weight:900;font-size:34px;color:#ffe14d;-webkit-text-stroke:3px #1b0f02;paint-order:stroke fill;letter-spacing:1px}
-  .ava.zap{animation:zap .6s}
-  @keyframes zap{0%,100%{transform:translate(0,0);filter:none}10%,50%{transform:translate(-6px,2px);filter:brightness(2.2) saturate(0)}30%,70%{transform:translate(6px,-2px);filter:brightness(1.6)}}
-  .ava.bonk{animation:bonk .5s cubic-bezier(.3,1.6,.5,1)}
-  @keyframes bonk{0%{transform:scale(1)}20%{transform:scale(1.18,.78)}55%{transform:scale(.94,1.08)}100%{transform:scale(1)}}
-  .ava.clang{animation:clang .7s}
-  @keyframes clang{0%,100%{transform:rotate(0)}15%{transform:rotate(-9deg)}35%{transform:rotate(7deg)}55%{transform:rotate(-5deg)}75%{transform:rotate(3deg)}}
-  .ava.pop{animation:popav .35s}
-  @keyframes popav{50%{transform:scale(1.08)}}
+  .ava.zap{animation:zap .18s linear 1}
+  @keyframes zap{0%,100%{transform:translate(0,0)}25%{transform:translate(-5px,2px)}75%{transform:translate(5px,-2px)}}
+  .ava.zap img{filter:brightness(2.4) saturate(0) contrast(1.4)}
+  .ava.pancake{animation:pancake 1.25s cubic-bezier(.2,.9,.3,1) 1}
+  @keyframes pancake{0%{transform:scale(1,1)}8%{transform:scale(1.45,.22)}55%{transform:scale(1.45,.22)}68%{transform:scale(.82,1.25)}80%{transform:scale(1.1,.9)}90%{transform:scale(.97,1.04)}100%{transform:scale(1,1)}}
+  .ava.clang{animation:clang .8s 1}
+  @keyframes clang{0%{transform:translateY(0) scale(1,1)}10%{transform:translateY(6px) scale(1.12,.86)}25%{transform:translateY(0) rotate(-7deg)}45%{transform:rotate(5deg)}65%{transform:rotate(-3deg)}85%{transform:rotate(1.5deg)}100%{transform:rotate(0)}}
+  .ava.boing{animation:boing .6s cubic-bezier(.3,1.7,.5,1) 1}
+  @keyframes boing{0%{transform:scale(1)}30%{transform:scale(.88,1.1)}60%{transform:scale(1.06,.95)}100%{transform:scale(1)}}
+  .bucket-on{position:absolute;left:50%;top:0;z-index:5;font-size:150px;line-height:1;pointer-events:none;transform-origin:50% 50%}
+  /* подсказка: палец дважды тапает по аватарке */
+  .finger{position:absolute;right:-18px;bottom:-14px;z-index:6;font-size:40px;pointer-events:none;transform-origin:30% 10%;
+          filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));animation:dbltap 2.6s ease-in-out infinite}
+  .finger::after{content:"";position:absolute;left:4px;top:-6px;width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,225,120,.9);
+                 opacity:0;animation:ripple 2.6s ease-out infinite}
+  @keyframes dbltap{0%,40%,100%{transform:translate(0,0) scale(1)}48%{transform:translate(-4px,-4px) scale(.82)}54%{transform:translate(0,0) scale(1)}62%{transform:translate(-4px,-4px) scale(.82)}68%{transform:translate(0,0) scale(1)}}
+  @keyframes ripple{0%,46%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}58%{opacity:0;transform:scale(1.9)}60%{opacity:1;transform:scale(.6)}64%{opacity:1;transform:scale(1)}74%,100%{opacity:0;transform:scale(1.9)}}
+  .finger.gone,.tap-hint.gone{opacity:0;transition:opacity .4s;animation:none}
   .hide{display:none!important}
   footer{margin-top:28px;color:rgba(255,255,255,.35);font-size:12px}
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
-<div class="hero-bg" aria-hidden="true"><img id="heroImg" src="clips/hero.jpg" data-src="clips/hero.webp" alt=""></div>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 <canvas id="confetti"></canvas>
 <div id="fxLayer" aria-hidden="true"></div>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 <main>
   <div class="lang"><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
-  <div class="ava-wrap"><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span>
+  <div class="ava-wrap"><span class="finger" id="finger">👆</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span>
     <div class="ava"><img src="avatar.jpg" alt="FENOMEN"></div></div>
-  <div><span class="tap-hint" id="tapHint">👆 <span data-i="tap">Нажми на меня</span></span></div>
+  <div><span class="tap-hint" id="tapHint"><span data-i="tap">Тапни на аватарку</span></span></div>
   <h1 class="shine-text">FENOMEN</h1>
   <a class="live" id="liveBadge" href="https://www.tiktok.com/@_heart995/live" target="_blank" rel="noopener"><span class="dot"></span><span id="liveText" data-i="live">Стримы каждый день в TikTok</span></a>
   <p class="bio" data-i="bio">Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире</p>
@@ -203,12 +223,12 @@ var LINKS = {
 };
 
 var TXT = {
-  ru:{live:"Стримы каждый день в TikTok",liveNow:"Сейчас в эфире — смотреть",tap:"Нажми на меня",bam:"БАМ!",bio:"Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире",
+  ru:{live:"Стримы каждый день в TikTok",liveNow:"Сейчас в эфире — смотреть",tap:"Тапни на аватарку",bam:"БАМ!",bio:"Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире",
       donate:"Донат",paypal:"Донат через PayPal",paypalS:"Карты и счёт PayPal",card:"Донат картой",cardS:"Нажми, чтобы скопировать номер · •••• 0408",cardOk:"Номер скопирован ✓",
       mono:"Донат Монобанк",monoS:"Банка Монобанка · можно картой любого банка",tipply:"Донат через Tipply",tipplyS:"Карта, PayPal, BLIK · сообщение появится на стриме",
       follow:"Мои страницы",fxT:"Что происходит на эфире",fxS:"Каждый эффект запускают зрители",fx1:"Молния и скелет",fx2:"Ведро на голову",fx3:"Дождь из роз",fx4:"НЛО похищает",fx5:"Петарды",fx6:"Толчок — улетаю",fx7:"Удар сковородкой",fx8:"Кит",fx9:"Вечеринка",fx10:"Ноги в пляс",watch:"Смотреть эфир",watchS:"Подарки управляют стримером",ytS:"@fenomen_stream · шортсы со стримов",
       tgS:"Новости и анонсы стримов",foot:"© FENOMEN · Спасибо, что ты с нами ❤️",title:"FENOMEN — стримы, донаты и соцсети"},
-  en:{live:"Live every day on TikTok",liveNow:"LIVE now — watch",tap:"Tap me",bam:"BONK!",bio:"Interactive stream: viewers influence the streamer, interact with them and control them live",
+  en:{live:"Live every day on TikTok",liveNow:"LIVE now — watch",tap:"Tap the avatar",bam:"BONK!",bio:"Interactive stream: viewers influence the streamer, interact with them and control them live",
       donate:"Donate",paypal:"Donate with PayPal",paypalS:"Cards or PayPal balance",card:"Donate by card",cardS:"Tap to copy card number · •••• 0408",cardOk:"Card number copied ✓",
       mono:"Donate via Monobank",monoS:"Monobank jar (Ukraine)",tipply:"Donate via Tipply",tipplyS:"Card, PayPal, BLIK · your message shows on stream",
       follow:"Follow me",fxT:"What happens on stream",fxS:"Every effect is triggered by viewers",fx1:"Lightning & skeleton",fx2:"Bucket on the head",fx3:"Rain of roses",fx4:"UFO abduction",fx5:"Firecrackers",fx6:"Push — I fly away",fx7:"Frying pan hit",fx8:"Whale",fx9:"Party",fx10:"Dancing legs",watch:"Watch live",watchS:"Gifts control the streamer",ytS:"@fenomen_stream · stream shorts",
@@ -283,76 +303,97 @@ var TXT = {
   // 7) эффекты по нажатию на аватарку — как на эфире, по кругу
   var layer=document.getElementById('fxLayer'), avaWrap=document.querySelector('.ava-wrap'), ava=avaWrap.querySelector('.ava');
   var isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  // вибрация: Android — navigator.vibrate; iPhone (iOS 18+) — системный тактильный «тик» переключателя
-  var hapLabel=null;
-  if(isIOS){ hapLabel=document.createElement('label'); hapLabel.setAttribute('aria-hidden','true');
-    hapLabel.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden';
-    var sw=document.createElement('input'); sw.type='checkbox'; sw.setAttribute('switch',''); sw.tabIndex=-1;
-    hapLabel.appendChild(sw); document.body.appendChild(hapLabel) }
-  function vibe(p){
-    if(navigator.vibrate){ try{navigator.vibrate(p)}catch(e){} return }
-    if(hapLabel){ var t=0; for(var i=0;i<p.length;i+=2){ (function(d){ setTimeout(function(){ hapLabel.click() },d) })(t); t+=p[i]+(p[i+1]||0) } }
+
+  // --- вибрация ---
+  // Android: navigator.vibrate. iPhone (iOS 18+): системный тактильный «тик» переключателя (единственный способ для сайтов).
+  function iosTick(){
+    try{ var l=document.createElement('label'); l.setAttribute('aria-hidden','true'); l.style.display='none';
+      var i=document.createElement('input'); i.type='checkbox'; i.setAttribute('switch',''); l.appendChild(i);
+      document.head.appendChild(l); l.click(); document.head.removeChild(l) }catch(e){}
   }
-  function rect(){ var r=ava.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2} }
-  function el(html,size,x,y){ var e=document.createElement('div'); e.className='e'; e.innerHTML=html; e.style.fontSize=size+'px';
-    e.style.transform='translate('+x+'px,'+y+'px)'; layer.appendChild(e); return e }
+  function tick(ms){ if(navigator.vibrate){ try{navigator.vibrate(ms||25)}catch(e){} } else if(isIOS){ iosTick() } }
+  function rhythm(p){ // p = [вибро, пауза, вибро, пауза, ...]
+    if(navigator.vibrate){ try{navigator.vibrate(p)}catch(e){} return }
+    if(!isIOS) return; var t=0; for(var i=0;i<p.length;i+=2){ if(t===0) iosTick(); else setTimeout(iosTick,t); t+=p[i]+(p[i+1]||0) }
+  }
+
+  // --- помощники ---
+  function rect(){ var r=ava.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,top:r.top} }
+  function el(html,size){ var e=document.createElement('div'); e.className='e'; e.innerHTML=html; e.style.fontSize=size+'px'; layer.appendChild(e); return e }
   function anim(e,frames,ms,ease){ var a=e.animate(frames,{duration:ms,easing:ease||'ease-out',fill:'forwards'}); a.onfinish=function(){e.remove()}; return a }
   function T(x,y,s,r){ return 'translate('+x+'px,'+y+'px) translate(-50%,-50%) scale('+(s||1)+') rotate('+(r||0)+'deg)' }
-  function shake(cls,ms){ ava.classList.remove(cls); void ava.offsetWidth; ava.classList.add(cls); setTimeout(function(){ava.classList.remove(cls)},ms) }
-  function flash(op,ms){ var f=document.createElement('div'); f.className='flash'; document.body.appendChild(f);
+  function react(cls,ms){ ava.classList.remove('zap','pancake','clang','boing'); void ava.offsetWidth; ava.classList.add(cls); clearTimeout(ava._t); ava._t=setTimeout(function(){ava.classList.remove(cls)},ms) }
+  function glow(op,ms){ var f=document.createElement('div'); f.className='flash'; document.body.appendChild(f);
     f.animate([{opacity:op},{opacity:0}],{duration:ms,easing:'ease-out'}).onfinish=function(){f.remove()} }
-  function stars(c,emo,n,dist){ for(var i=0;i<n;i++){ var a=i/n*Math.PI*2+Math.random()*.4, d=dist*(0.8+Math.random()*.5);
-      var e=el(emo,18+Math.random()*12,0,0); anim(e,[{transform:T(c.x,c.y,.3),opacity:1},{transform:T(c.x+Math.cos(a)*d,c.y+Math.sin(a)*d,1,Math.random()*360),opacity:0}],700+Math.random()*300) } }
-  function comic(c,txt){ var e=el('<span class="comic">'+txt+'</span>',34,0,0);
-    anim(e,[{transform:T(c.x+c.r*.9,c.y-c.r,.2,-15),opacity:0},{transform:T(c.x+c.r*.9,c.y-c.r*1.1,1.15,-12),opacity:1,offset:.25},{transform:T(c.x+c.r*.9,c.y-c.r*1.3,1,-12),opacity:0}],900) }
+  function burst(c,emo,n,dist,size){ for(var i=0;i<n;i++){ var a=i/n*Math.PI*2+Math.random()*.5, d=dist*(0.75+Math.random()*.5);
+      var e=el(emo,size||(16+Math.random()*10)); anim(e,[{transform:T(c.x,c.y,.3),opacity:1},{transform:T(c.x+Math.cos(a)*d,c.y+Math.sin(a)*d,1,Math.random()*200-100),opacity:0}],650+Math.random()*250) } }
+  function comic(c,txt){ var e=el('<span class="comic">'+txt+'</span>',34);
+    anim(e,[{transform:T(c.x,c.y-c.r*1.35,.2,-8),opacity:0},{transform:T(c.x,c.y-c.r*1.45,1.2,-6),opacity:1,offset:.2},{transform:T(c.x,c.y-c.r*1.6,1,-6),opacity:1,offset:.75},{transform:T(c.x,c.y-c.r*1.75,.9,-6),opacity:0}],1100) }
+  function bolt(c){
+    var W=innerWidth, H=innerHeight, sx=c.x+(Math.random()*160-80), pts=[[sx,-20]], n=6;
+    for(var i=1;i<n;i++) pts.push([sx+(c.x-sx)*i/n+(Math.random()*44-22),(c.y-c.r*.7)*i/n]);
+    pts.push([c.x+(Math.random()*20-10),c.y-c.r*.55]);
+    var d=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(0)+' '+p[1].toFixed(0)}).join(' ');
+    var b=document.createElement('div'); b.className='e';
+    b.innerHTML='<svg width="'+W+'" height="'+H+'" style="position:absolute;left:0;top:0;overflow:visible"><path d="'+d+'" fill="none" stroke="#9fd8ff" stroke-width="10" stroke-linejoin="round" opacity=".5" style="filter:blur(5px)"/><path d="'+d+'" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>';
+    layer.appendChild(b); anim(b,[{opacity:1},{opacity:.3,offset:.3},{opacity:1,offset:.5},{opacity:0}],260,'linear');
+  }
+
+  // --- ведро, которое остаётся на голове до следующего тапа ---
+  var bucketEl=null;
+  function dropBucketOff(){
+    if(!bucketEl) return; var b=bucketEl; bucketEl=null;
+    b.animate([{transform:getComputedStyle(b).transform},{transform:'translate(-50%,-10%) translate(70px,180px) rotate(230deg)',opacity:0}],{duration:650,easing:'ease-in',fill:'forwards'}).onfinish=function(){b.remove()};
+    tick(20);
+  }
 
   var EFFECTS=[
-    function lightning(){ var c=rect(); vibe([30,40,30,40,140]);
-      var W=innerWidth, sx=c.x+(Math.random()*120-60), pts=[[sx,-20]], steps=7;
-      for(var i=1;i<steps;i++){ pts.push([sx+(c.x-sx)*i/steps+(Math.random()*50-25), (c.y-c.r)*i/steps]) } pts.push([c.x,c.y-c.r*.6]);
-      var d=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(0)+' '+p[1].toFixed(0)}).join(' ');
-      var svg=document.createElement('div'); svg.className='e';
-      svg.innerHTML='<svg width="'+W+'" height="'+innerHeight+'" style="position:absolute;left:0;top:0;overflow:visible"><path d="'+d+'" fill="none" stroke="#bfe6ff" stroke-width="9" stroke-linejoin="round" opacity=".55" style="filter:blur(4px)"/><path d="'+d+'" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round"/></svg>';
-      layer.appendChild(svg); anim(svg,[{opacity:1},{opacity:.2},{opacity:1},{opacity:.1},{opacity:1},{opacity:0}],650,'linear');
-      flash(.75,260); setTimeout(function(){ shake('zap',600); stars(c,'⚡',8,c.r*1.6) },80) },
-    function pan(){ var c=rect(), from=-80, hit=c.x-c.r*.95; vibe([20,170,110,60,40]);
-      var e=el('🍳',86,0,0);
-      var a=e.animate([{transform:T(from,c.y,1,-60)},{transform:T(hit,c.y,1.1,25),offset:.55},{transform:T(hit-30,c.y+10,1,-10),offset:.7},{transform:T(from,c.y+60,1,-90)}],{duration:900,easing:'ease-in-out',fill:'forwards'});
-      a.onfinish=function(){e.remove()};
-      setTimeout(function(){ shake('bonk',500); stars(c,'💫',7,c.r*1.4); comic(c,TXT[lang()].bam) },470) },
-    function bucket(){ var c=rect(), headY=c.y-c.r*.55; vibe([15,330,60,50,40,50,30]);
-      var e=el('🪣',96,0,0);
-      var a=e.animate([{transform:T(c.x,-120,1,180)},{transform:T(c.x,headY,1,180),offset:.38},{transform:T(c.x,headY-14,1,172),offset:.46},{transform:T(c.x,headY,1,186),offset:.54},
-        {transform:T(c.x,headY,1,180),offset:.8},{transform:T(c.x+90,c.y+c.r*2.2,1,250),opacity:0}],{duration:1700,easing:'ease-in',fill:'forwards'});
-      a.onfinish=function(){e.remove()};
-      setTimeout(function(){ shake('clang',700); stars(c,'✨',6,c.r*1.3) },640) },
-    function roses(){ vibe([15,90,15,90,15,90,15]); shake('pop',350);
-      var W=innerWidth, H=innerHeight, P=['🌹','🌸','🥀','🌺','💮'];
-      for(var i=0;i<46;i++){ (function(i){ setTimeout(function(){
-        var x=Math.random()*W, s=16+Math.random()*20, dx=(Math.random()*160-80), dur=2600+Math.random()*1800;
-        var e=el(Math.random()<.35?P[(Math.random()*P.length)|0]:'<span style="display:inline-block;width:.7em;height:.45em;border-radius:60% 0 60% 0;background:linear-gradient(135deg,#ff6b8b,#c2185b)"></span>',s,0,0);
-        anim(e,[{transform:T(x,-40,1,0),opacity:0},{transform:T(x+dx*.3,H*.25,1,120),opacity:1,offset:.15},{transform:T(x+dx,H+40,1,540),opacity:.9}],dur,'linear') },i*45) })(i) } },
-    function fire(){ var c=rect(); var spots=[[-1.1,.5],[1.1,.4],[0,1.25]];
-      vibe([25,60,25,60,25,60,90]);
+    function lightning(){ var c=rect();
+      rhythm([35,105,35,105,35,105,35,105,70]);              // 5 ударов: тюф-тюф-тюф-тюф-тюф
+      for(var i=0;i<5;i++){ (function(i){ setTimeout(function(){ var c=rect(); bolt(c); glow(.28,180); react('zap',180);
+        if(i===4) burst(c,'⚡',6,c.r*1.5,20) }, i*140) })(i) } },
+    function pan(){ var c=rect();
+      var e=el('🍳',110);                                     // замах сверху и удар по макушке
+      var hitX=c.x+8, hitY=c.top+c.r*.5;
+      e.animate([{transform:T(c.x+c.r*1.6,c.top-c.r*1.7,1,-120),opacity:1},{transform:T(c.x+c.r*1.3,c.top-c.r*1.9,1,-150),opacity:1,offset:.35},
+                 {transform:T(hitX,hitY,1.05,-15),opacity:1,offset:.55},{transform:T(hitX+6,hitY-26,1,-30),opacity:1,offset:.78},{transform:T(c.x+c.r*1.8,c.top-c.r*2.2,.9,-140),opacity:0}],
+                {duration:1150,easing:'cubic-bezier(.55,0,.35,1)',fill:'forwards'}).onfinish=function(){e.remove()};
+      setTimeout(function(){ rhythm([120,90,30]); react('pancake',1250); var c=rect(); burst({x:c.x,y:c.y-c.r*.2,r:c.r},'💫',6,c.r*1.5,20); comic(c,TXT[lang()].bam) }, 1150*.55) },
+    function bucket(){ var c=rect();
+      var b=document.createElement('div'); b.className='bucket-on'; b.textContent='🪣'; ava.appendChild(b); bucketEl=b;
+      var dia=c.r*2, sz=dia*1.05; b.style.fontSize=sz+'px';
+      // падает сверху вверх дном и садится на кепку, закрывая верх кружка
+      b.animate([{transform:'translate(-50%,-260%) rotate(180deg)'},{transform:'translate(-50%,-38%) rotate(180deg)',offset:.62},
+                 {transform:'translate(-50%,-52%) rotate(172deg)',offset:.75},{transform:'translate(-50%,-30%) rotate(186deg)',offset:.86},{transform:'translate(-50%,-32%) rotate(180deg)'}],
+                {duration:900,easing:'cubic-bezier(.5,0,.6,1)',fill:'forwards'});
+      setTimeout(function(){ rhythm([70,60,40,60,30]); react('clang',800); burst(rect(),'✨',6,c.r*1.4,18) }, 560) },
+    function roses(){ rhythm([15,110,15,110,15,110,15]); react('boing',600);
+      var W=innerWidth, H=innerHeight, P=['🌹','🌸','🥀','🌺'];
+      for(var i=0;i<50;i++){ (function(i){ setTimeout(function(){
+        var x=Math.random()*W, s=16+Math.random()*20, dx=(Math.random()*160-80), dur=3000+Math.random()*2000;
+        var e=el(Math.random()<.35?P[(Math.random()*P.length)|0]:'<span style="display:inline-block;width:.7em;height:.45em;border-radius:60% 0 60% 0;background:linear-gradient(135deg,#ff7a95,#c2185b)"></span>',s);
+        anim(e,[{transform:T(x,-40,1,0),opacity:0},{transform:T(x+dx*.3,H*.25,1,120),opacity:1,offset:.15},{transform:T(x+dx,H+40,1,540),opacity:.9}],dur,'linear') },i*50) })(i) } },
+    function fire(){ var c=rect(), spots=[[-1.15,.45],[1.15,.35],[0,1.3]];
+      rhythm([25,280,40,260,40,260,60]);
       spots.forEach(function(s,i){ setTimeout(function(){ var x=c.x+s[0]*c.r, y=c.y+s[1]*c.r;
-        var e=el('🧨',38,0,0); anim(e,[{transform:T(x,y,.6,-20)},{transform:T(x,y,1.1,10),offset:.6},{transform:T(x,y,.2,30),opacity:0}],450);
-        setTimeout(function(){ flash(.35,160); boom(x,y); stars({x:x,y:y,r:20},'💥',3,40) },380) },i*300) });
-      setTimeout(function(){ shake('zap',600) },420) }
+        var e=el('🧨',40); anim(e,[{transform:T(x,y,.6,-20)},{transform:T(x,y,1.15,10),offset:.6},{transform:T(x,y,.2,30),opacity:0}],380);
+        setTimeout(function(){ burst({x:x,y:y,r:14},'💥',1,1,34); burst({x:x,y:y,r:14},'✨',5,46,14); react('boing',600) },330) },i*300) }) }
   ];
-  var fxIdx=0, busy=false;
-  avaWrap.addEventListener('click',function(e){
-    e.preventDefault(); if(busy) return; busy=true; setTimeout(function(){busy=false},650);
-    document.getElementById('tapHint').classList.add('gone');
-    EFFECTS[fxIdx%EFFECTS.length](); fxIdx++;
-  });
+  var fxIdx=0, lock=false;
+  function onTap(e){
+    if(e) e.preventDefault();
+    tick(18);                                                 // «тук» на каждое касание, как лайки в TikTok
+    if(lock) return; lock=true; setTimeout(function(){lock=false},700);
+    document.getElementById('tapHint').classList.add('gone'); document.getElementById('finger').classList.add('gone');
+    var wasBucket=!!bucketEl; dropBucketOff();
+    var run=EFFECTS[fxIdx%EFFECTS.length]; fxIdx++;
+    setTimeout(run, wasBucket?250:0);
+  }
+  avaWrap.addEventListener('click',onTap);
 
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(es){ if(es[0].isIntersecting) begin() },{rootMargin:'300px 0px'}).observe(document.getElementById('fx'));
   } else { begin() }
-
-  // 4) анимированный фон шапки
-  var hi=document.getElementById('heroImg');
-  if(!calm && hi){ var hp=new Image(); hp.onload=function(){ hi.src=hp.src }; hp.src=hi.getAttribute('data-src') }
 
   // 5) «Сейчас в эфире»: статус пишет проверка на GitHub каждые ~10 минут в status.json
   var LIVE_URL='https://raw.githubusercontent.com/taec432-maker/fenomen/main/status.json';
@@ -389,9 +430,6 @@ var TXT = {
     raf = parts.length ? requestAnimationFrame(tick) : 0;
     if(!raf) cx.clearRect(0,0,cv.width,cv.height);
   }
-  document.querySelectorAll('#donLinks a.don').forEach(function(a){
-    a.addEventListener('click',function(e){ var r=a.getBoundingClientRect(); boom(e.clientX||r.left+r.width/2, e.clientY||r.top+r.height/2) });
-  });
 
 })();
 </script>
