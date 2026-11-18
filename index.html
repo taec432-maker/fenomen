@@ -60,7 +60,7 @@
   a.don.main .shine{display:block;position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);animation:shine 3.2s ease-in-out 1s infinite}
   @keyframes shine{40%,100%{transform:translateX(120%)}}
 
-  .paypal .ic{background:#0070ba}.card .ic{background:linear-gradient(135deg,#6a5cff,#2dd4ff)}.mono .ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);font-size:13px;letter-spacing:-.5px}
+  .paypal .ic{background:#0070ba}.card .ic{background:linear-gradient(135deg,#6a5cff,#2dd4ff)}.mono .ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);font-size:10.5px;letter-spacing:-.2px}
   .tipply .ic{background:#1ed78a;color:#05281a}
   .live-btn .ic{background:linear-gradient(135deg,#ff2d55,#ff7a00)}
   .tiktok .ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}.yt .ic{background:#ff0033}.tw .ic{background:#9146ff}.tg .ic{background:#27a7e7}
@@ -121,19 +121,19 @@
 /* ===== ССЫЛКИ НА ДОНАТЫ. Пустая строка = кнопка скрыта. ===== */
 var LINKS = {
   paypal: "https://paypal.me/Dobryak86",
-  card:   "",   // ссылка на оплату картой
-  mono:   "",   // ссылка на «банку» Монобанка: https://send.monobank.ua/jar/...
+  card:   "copy:5375411212980408",   // номер карты банки: кнопка копирует номер (на экране видны только последние 4 цифры)
+  mono:   "https://send.monobank.ua/jar/3iyvhDKEMH",
   tipply: "https://tipply.pl/@fenomen_tiktok"
 };
 
 var TXT = {
   ru:{live:"Стримы каждый день в TikTok",bio:"Дари подарки — и я выполняю: танцую, пугаюсь скелетов и устраиваю вечеринки 🎉💀",
-      donate:"Донат",paypal:"Донат через PayPal",paypalS:"Карты и счёт PayPal",card:"Донат картой",cardS:"Банковская карта",
-      mono:"Донат Монобанк",monoS:"Банка Монобанка",tipply:"Донат через Tipply",tipplyS:"Карта, PayPal, BLIK · сообщение появится на стриме",
+      donate:"Донат",paypal:"Донат через PayPal",paypalS:"Карты и счёт PayPal",card:"Донат картой",cardS:"Нажми, чтобы скопировать номер · •••• 0408",cardOk:"Номер скопирован ✓",
+      mono:"Донат Монобанк",monoS:"Банка Монобанка · можно картой любого банка",tipply:"Донат через Tipply",tipplyS:"Карта, PayPal, BLIK · сообщение появится на стриме",
       follow:"Мои страницы",watch:"Смотреть эфир",watchS:"Подарки управляют стримером",ytS:"@fenomen_stream · шортсы со стримов",
       tgS:"Новости и анонсы стримов",foot:"© FENOMEN · Спасибо, что ты с нами ❤️",title:"FENOMEN — стримы, донаты и соцсети"},
   en:{live:"Live every day on TikTok",bio:"Send gifts — and I do it: dance, get scared by skeletons and throw parties 🎉💀",
-      donate:"Donate",paypal:"Donate with PayPal",paypalS:"Cards or PayPal balance",card:"Donate by card",cardS:"Bank card",
+      donate:"Donate",paypal:"Donate with PayPal",paypalS:"Cards or PayPal balance",card:"Donate by card",cardS:"Tap to copy card number · •••• 0408",cardOk:"Card number copied ✓",
       mono:"Donate via Monobank",monoS:"Monobank jar (Ukraine)",tipply:"Donate via Tipply",tipplyS:"Card, PayPal, BLIK · your message shows on stream",
       follow:"Follow me",watch:"Watch live",watchS:"Gifts control the streamer",ytS:"@fenomen_stream · stream shorts",
       tgS:"News and stream announcements",foot:"© FENOMEN · Thanks for being here ❤️",title:"FENOMEN — live streams, donate & socials"}
@@ -143,7 +143,19 @@ var TXT = {
   var any=false;
   document.querySelectorAll('#donLinks a[data-key]').forEach(function(a){
     var u=LINKS[a.getAttribute('data-key')];
-    if(u){a.href=u;any=true}else{a.classList.add('hide')}
+    if(u){
+      any=true;
+      if(u.indexOf('copy:')===0){
+        var num=u.slice(5); a.href='#'; a.removeAttribute('target');
+        a.addEventListener('click',function(e){
+          e.preventDefault();
+          var done=function(){var sm=a.querySelector('small'); var old=sm.getAttribute('data-i'); var l=document.documentElement.lang==='en'?'en':'ru';
+            sm.textContent=TXT[l].cardOk; setTimeout(function(){sm.textContent=TXT[l][old]},2200)};
+          if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(num).then(done,function(){fallback()})}else{fallback()}
+          function fallback(){var t=document.createElement('textarea');t.value=num;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();try{document.execCommand('copy')}catch(x){}document.body.removeChild(t);done()}
+        });
+      }else{a.href=u}
+    }else{a.classList.add('hide')}
   });
   if(!any){document.getElementById('donSec').classList.add('hide');document.getElementById('donLinks').classList.add('hide')}
   var first=document.querySelector('#donLinks a.don:not(.hide)'); if(first) first.classList.add('main');
