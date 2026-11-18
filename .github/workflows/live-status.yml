@@ -1,57 +1,27 @@
-# Проверяет каждые ~10 минут, идёт ли эфир в TikTok (@_heart995),
-# и записывает результат в status.json (страница читает этот файл).
+# Следит, идёт ли эфир в TikTok (@_heart995), и пишет результат в status.json.
+# Один запуск проверяет каждые 2 минуты ~5,5 часа, затем сам себя перезапускает.
+# Расписание ниже — запасной вариант: поднимет проверку, если цепочка вдруг прервётся.
 name: live-status
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "17 */2 * * *"
   workflow_dispatch:
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: live-status
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
-  check:
+  watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 345
     steps:
-      - uses: actions/checkout@v4
-      - name: Check TikTok live status
-        id: check
-        run: |
-          python3 - <<'PY'
-          import json, os, urllib.request, datetime
-          URL = ("https://www.tiktok.com/api-live/user/room/?aid=1988&app_name=tiktok_web"
-                 "&device_platform=web_pc&uniqueId=_heart995&sourceType=54")
-          UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36"
-          try:
-              d = json.load(urllib.request.urlopen(urllib.request.Request(URL, headers={"User-Agent": UA}), timeout=20))
-              data = d.get("data") or {}
-              st = (data.get("liveRoom") or {}).get("status") or (data.get("user") or {}).get("status")
-              live = (st == 2)
-              print("TikTok status:", st, "-> live:", live)
-          except Exception as e:
-              print("Не удалось получить статус:", e)
-              raise SystemExit(0)
-          now = datetime.datetime.now(datetime.timezone.utc)
-          try:
-              old = json.load(open("status.json"))
-          except Exception:
-              old = {}
-          try:
-              age = (now - datetime.datetime.fromisoformat(old.get("checked", "").replace("Z", "+00:00"))).total_seconds()
-          except Exception:
-              age = 1e9
-          # пишем, если статус изменился, или (пока идёт эфир) раз в ~25 минут — чтобы страница знала, что данные свежие
-          if old.get("live") != live or (live and age > 25 * 60):
-              json.dump({"live": live, "checked": now.strftime("%Y-%m-%dT%H:%M:%SZ")}, open("status.json", "w"))
-              open(os.environ["GITHUB_OUTPUT"], "a").write("changed=1\n")
-          PY
-      - name: Commit status
-        if: steps.check.outputs.changed == '1'
-        run: |
-          git config user.name "live-status-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add status.json
-          git commit -m "Update live status"
-          git push
+      - uses: actions/checkout@v5
+      - name: Watch TikTok live status
+        run: python3 .github/live_watch.py
+      - name: Restart watcher
+        if: success() || failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run live-status.yml --ref main --repo "$GITHUB_REPOSITORY"
