@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FENOMEN — live streams, donate &amp; socials</title>
-<meta name="description" content="FENOMEN — интерактивные стримы: дари подарки и управляй стримером. Donate and all socials in one place.">
+<meta name="description" content="FENOMEN — интерактивные стримы: зрители управляют стримером. Interactive streams: viewers control the streamer.">
 <meta property="og:title" content="FENOMEN">
-<meta property="og:description" content="Дари подарки — управляй стримером! / Send gifts, control the streamer!">
+<meta property="og:description" content="Интерактивный стрим: зрители управляют стримером / Interactive stream: viewers control the streamer">
 <meta property="og:image" content="avatar.jpg">
 <meta name="theme-color" content="#14081f">
 <link rel="icon" href="avatar.jpg">
@@ -56,11 +56,12 @@
   a.don.main .t small{color:#4a2d00}
   a.don.main .arr{color:#1b0f02}
   a.don.main .ic{background:rgba(0,0,0,.14)!important;box-shadow:none!important;color:#1b0f02}
+  a.don.main .ic svg{fill:#003087}
   a.don .shine{display:none}
   a.don.main .shine{display:block;position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);animation:shine 3.2s ease-in-out 1s infinite}
   @keyframes shine{40%,100%{transform:translateX(120%)}}
 
-  .paypal .ic{background:#0070ba}.card .ic{background:linear-gradient(135deg,#6a5cff,#2dd4ff)}.mono .ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);font-size:10.5px;letter-spacing:-.2px}
+  .paypal .ic{background:#0070ba}.card .ic{background:linear-gradient(135deg,#6a5cff,#2dd4ff)}a.btn.mono .ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);font-size:11px;font-weight:800;letter-spacing:-.3px;overflow:hidden;white-space:nowrap;padding:0}
   .tipply .ic{background:#1ed78a;color:#05281a}
   .live-btn .ic{background:linear-gradient(135deg,#ff2d55,#ff7a00)}
   .tiktok .ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}.yt .ic{background:#ff0033}.tw .ic{background:#9146ff}.tg .ic{background:#27a7e7}
@@ -77,13 +78,13 @@
   <div class="ava"><img src="avatar.jpg" alt="FENOMEN"></div>
   <h1>FENOMEN</h1>
   <div class="live"><span class="dot"></span><span data-i="live">Стримы каждый день в TikTok</span></div>
-  <p class="bio" data-i="bio">Дари подарки — и я выполняю: танцую, пугаюсь скелетов и устраиваю вечеринки 🎉💀</p>
+  <p class="bio" data-i="bio">Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире</p>
 
   <!-- ДОНАТЫ. Порядок: PayPal, Карта, Монобанк, Tipply. Кнопка без ссылки (см. LINKS в скрипте ниже) скрывается сама. -->
   <div class="sec" id="donSec"><span data-i="donate">Донат</span></div>
   <nav class="links" id="donLinks">
     <a class="btn don paypal" data-key="paypal" target="_blank" rel="noopener">
-      <span class="shine"></span><span class="ic">P</span>
+      <span class="shine"></span><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg></span>
       <span class="t"><span data-i="paypal">Донат через PayPal</span><small data-i="paypalS">PayPal</small></span><span class="arr">›</span></a>
     <a class="btn don card" data-key="card" target="_blank" rel="noopener">
       <span class="shine"></span><span class="ic">💳</span>
@@ -98,12 +99,6 @@
 
   <div class="sec"><span data-i="follow">Мои страницы</span></div>
   <nav class="links">
-    <a class="btn live-btn" href="https://www.tiktok.com/@_heart995/live" target="_blank" rel="noopener">
-      <span class="ic"><svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 100 8 4 4 0 000-8zm-7.07-.93l1.41 1.41A7.95 7.95 0 004 12c0 1.3.31 2.53.86 3.62l-1.43 1.43A9.94 9.94 0 012 12c0-1.8.48-3.5 1.33-4.96zm14.14 0A9.94 9.94 0 0122 12c0 1.86-.51 3.6-1.4 5.09l-1.45-1.45A7.95 7.95 0 0020 12c0-1.27-.3-2.47-.82-3.53l1.43-1.4z"/></svg></span>
-      <span class="t"><span data-i="watch">Смотреть эфир</span><small data-i="watchS">Подарки управляют стримером</small></span><span class="arr">›</span></a>
-    <a class="btn tiktok" href="https://www.tiktok.com/@_heart995" target="_blank" rel="noopener">
-      <span class="ic"><svg viewBox="0 0 24 24"><path d="M16.6 5.82A4.3 4.3 0 0115.54 3h-3.1v12.4a2.6 2.6 0 11-2.6-2.6c.27 0 .53.04.78.12V9.75a5.74 5.74 0 00-.78-.05 5.7 5.7 0 105.7 5.7V9.01a7.35 7.35 0 004.3 1.38V7.3a4.3 4.3 0 01-3.24-1.48z"/></svg></span>
-      <span class="t">TikTok<small>@_heart995</small></span><span class="arr">›</span></a>
     <a class="btn yt" href="https://www.youtube.com/@fenomen_stream" target="_blank" rel="noopener">
       <span class="ic"><svg viewBox="0 0 24 24"><path d="M21.6 7.2a2.5 2.5 0 00-1.76-1.77C18.27 5 12 5 12 5s-6.27 0-7.84.43A2.5 2.5 0 002.4 7.2 26 26 0 002 12a26 26 0 00.4 4.8 2.5 2.5 0 001.76 1.77C5.73 19 12 19 12 19s6.27 0 7.84-.43a2.5 2.5 0 001.76-1.77A26 26 0 0022 12a26 26 0 00-.4-4.8zM10 15V9l5.2 3L10 15z"/></svg></span>
       <span class="t">YouTube<small data-i="ytS">@fenomen_stream · шортсы со стримов</small></span><span class="arr">›</span></a>
@@ -127,12 +122,12 @@ var LINKS = {
 };
 
 var TXT = {
-  ru:{live:"Стримы каждый день в TikTok",bio:"Дари подарки — и я выполняю: танцую, пугаюсь скелетов и устраиваю вечеринки 🎉💀",
+  ru:{live:"Стримы каждый день в TikTok",bio:"Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире",
       donate:"Донат",paypal:"Донат через PayPal",paypalS:"Карты и счёт PayPal",card:"Донат картой",cardS:"Нажми, чтобы скопировать номер · •••• 0408",cardOk:"Номер скопирован ✓",
       mono:"Донат Монобанк",monoS:"Банка Монобанка · можно картой любого банка",tipply:"Донат через Tipply",tipplyS:"Карта, PayPal, BLIK · сообщение появится на стриме",
       follow:"Мои страницы",watch:"Смотреть эфир",watchS:"Подарки управляют стримером",ytS:"@fenomen_stream · шортсы со стримов",
       tgS:"Новости и анонсы стримов",foot:"© FENOMEN · Спасибо, что ты с нами ❤️",title:"FENOMEN — стримы, донаты и соцсети"},
-  en:{live:"Live every day on TikTok",bio:"Send gifts — and I do it: dance, get scared by skeletons and throw parties 🎉💀",
+  en:{live:"Live every day on TikTok",bio:"Interactive stream: viewers influence the streamer, interact with them and control them live",
       donate:"Donate",paypal:"Donate with PayPal",paypalS:"Cards or PayPal balance",card:"Donate by card",cardS:"Tap to copy card number · •••• 0408",cardOk:"Card number copied ✓",
       mono:"Donate via Monobank",monoS:"Monobank jar (Ukraine)",tipply:"Donate via Tipply",tipplyS:"Card, PayPal, BLIK · your message shows on stream",
       follow:"Follow me",watch:"Watch live",watchS:"Gifts control the streamer",ytS:"@fenomen_stream · stream shorts",
