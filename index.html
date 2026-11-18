@@ -120,7 +120,6 @@
   a.live.on .dot{background:#fff}
   @keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(255,45,85,.55)}70%,100%{box-shadow:0 0 0 14px rgba(255,45,85,0)}}
   /* ===== конфетти ===== */
-  #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
 
   /* ===== эффекты по нажатию на аватарку ===== */
   .ava-wrap{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -143,14 +142,29 @@
   .ava.boing{animation:boing .6s cubic-bezier(.3,1.7,.5,1) 1}
   @keyframes boing{0%{transform:scale(1)}30%{transform:scale(.88,1.1)}60%{transform:scale(1.06,.95)}100%{transform:scale(1)}}
   .bucket-on{position:absolute;left:50%;top:0;z-index:5;font-size:150px;line-height:1;pointer-events:none;transform-origin:50% 50%}
-  /* подсказка: палец дважды тапает по аватарке */
-  .finger{position:absolute;right:-18px;bottom:-14px;z-index:6;font-size:40px;pointer-events:none;transform-origin:30% 10%;
-          filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));animation:dbltap 2.6s ease-in-out infinite}
-  .finger::after{content:"";position:absolute;left:4px;top:-6px;width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,225,120,.9);
-                 opacity:0;animation:ripple 2.6s ease-out infinite}
-  @keyframes dbltap{0%,40%,100%{transform:translate(0,0) scale(1)}48%{transform:translate(-4px,-4px) scale(.82)}54%{transform:translate(0,0) scale(1)}62%{transform:translate(-4px,-4px) scale(.82)}68%{transform:translate(0,0) scale(1)}}
-  @keyframes ripple{0%,46%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}58%{opacity:0;transform:scale(1.9)}60%{opacity:1;transform:scale(.6)}64%{opacity:1;transform:scale(1)}74%,100%{opacity:0;transform:scale(1.9)}}
-  .finger.gone,.tap-hint.gone{opacity:0;transition:opacity .4s;animation:none}
+  /* аватарка — это <label> со скрытым переключателем: настоящий тап по ней даёт тактильный «тик» на iPhone */
+  label.ava-wrap{display:block;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+  label.ava-wrap *{pointer-events:none}
+  #hapSw{display:none}
+  /* подсказка: две руки стучат по аватарке с двух сторон */
+  .hand{position:absolute;top:50%;z-index:6;font-size:38px;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));transition:opacity .4s}
+  .hl{left:-60px;animation:knockL 1.4s ease-in-out infinite}
+  .hr{right:-60px;animation:knockR 1.4s ease-in-out infinite;animation-delay:.12s}
+  @keyframes knockL{0%,45%,100%{transform:translate(0,-50%) scale(1)}12%{transform:translate(14px,-50%) scale(.88)}22%{transform:translate(0,-50%)}32%{transform:translate(14px,-50%) scale(.88)}}
+  @keyframes knockR{0%,45%,100%{transform:translate(0,-50%) scale(1)}12%{transform:translate(-14px,-50%) scale(.88)}22%{transform:translate(0,-50%)}32%{transform:translate(-14px,-50%) scale(.88)}}
+  .tap-row{margin-top:10px}
+  .tap-hint{display:inline-block;padding:5px 16px;border-radius:999px;background:linear-gradient(135deg,var(--gold),#ff8a00);color:#1a0b2e;
+            font-size:15px;font-weight:900;letter-spacing:.06em;box-shadow:0 4px 16px rgba(255,170,30,.35);animation:tapPulse 1.4s ease-in-out infinite;transition:opacity .4s}
+  @keyframes tapPulse{0%,45%,100%{transform:scale(1)}12%,32%{transform:scale(1.12)}22%{transform:scale(1)}}
+  .hand.gone,.tap-hint.gone{opacity:0;animation-play-state:paused}
+  .vib-note{margin:8px auto 0;max-width:280px;font-size:12px;color:rgba(255,255,255,.75)}
+  /* в эфире: красное кольцо и плашка LIVE, как в TikTok */
+  .live-tag{display:none;position:absolute;left:50%;bottom:-9px;z-index:7;transform:translateX(-50%);padding:2px 10px;border-radius:6px;
+            background:#ff2d55;color:#fff;font-size:12px;font-weight:900;letter-spacing:.08em;border:2px solid var(--bg1)}
+  body.is-live .live-tag{display:block}
+  body.is-live .ava::before{background:conic-gradient(#ff2d55,#ff7a00,#ff2d55,#ff4f9a,#ff2d55);animation:spin 2.5s linear infinite}
+  body.is-live .ava{box-shadow:0 0 0 0 rgba(255,45,85,.6);border-radius:50%;animation:livering 1.6s infinite}
+  @keyframes livering{0%{box-shadow:0 0 0 0 rgba(255,45,85,.55)}70%,100%{box-shadow:0 0 0 16px rgba(255,45,85,0)}}
   .hide{display:none!important}
   footer{margin-top:28px;color:rgba(255,255,255,.35);font-size:12px}
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -158,14 +172,16 @@
 </head>
 <body>
 <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
-<canvas id="confetti"></canvas>
 <div id="fxLayer" aria-hidden="true"></div>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 <main>
   <div class="lang"><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
-  <div class="ava-wrap"><span class="finger" id="finger">👆</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span>
-    <div class="ava"><img src="avatar.jpg" alt="FENOMEN"></div></div>
-  <div><span class="tap-hint" id="tapHint"><span data-i="tap">Тапни на аватарку</span></span></div>
+  <label class="ava-wrap" id="avaTap"><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span>
+    <input type="checkbox" switch id="hapSw" tabindex="-1" aria-hidden="true">
+    <span class="hand hl" id="handL">👉</span><span class="hand hr" id="handR">👈</span>
+    <div class="ava"><img src="avatar.jpg" alt="FENOMEN"></div><span class="live-tag">LIVE</span></label>
+  <div class="tap-row"><span class="tap-hint" id="tapHint"><span data-i="tap">НАЖМИ!</span></span></div>
+  <div class="vib-note hide" id="vibNote" data-i="vibNote">📳 Для вибрации: ⋯ → «Открыть в браузере»</div>
   <h1 class="shine-text">FENOMEN</h1>
   <a class="live" id="liveBadge" href="https://www.tiktok.com/@_heart995/live" target="_blank" rel="noopener"><span class="dot"></span><span id="liveText" data-i="live">Стримы каждый день в TikTok</span></a>
   <p class="bio" data-i="bio">Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире</p>
@@ -223,12 +239,12 @@ var LINKS = {
 };
 
 var TXT = {
-  ru:{live:"Стримы каждый день в TikTok",liveNow:"Сейчас в эфире — смотреть",tap:"Тапни на аватарку",bam:"БАМ!",bio:"Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире",
+  ru:{live:"Стримы каждый день в TikTok",liveNow:"Сейчас в эфире — смотреть",tap:"НАЖМИ!",vibNote:"📳 Для вибрации: ⋯ → «Открыть в браузере»",bam:"БАМ!",bio:"Интерактивный стрим: зрители влияют на стримера, взаимодействуют с ним и управляют им в прямом эфире",
       donate:"Донат",paypal:"Донат через PayPal",paypalS:"Карты и счёт PayPal",card:"Донат картой",cardS:"Нажми, чтобы скопировать номер · •••• 0408",cardOk:"Номер скопирован ✓",
       mono:"Донат Монобанк",monoS:"Банка Монобанка · можно картой любого банка",tipply:"Донат через Tipply",tipplyS:"Карта, PayPal, BLIK · сообщение появится на стриме",
       follow:"Мои страницы",fxT:"Что происходит на эфире",fxS:"Каждый эффект запускают зрители",fx1:"Молния и скелет",fx2:"Ведро на голову",fx3:"Дождь из роз",fx4:"НЛО похищает",fx5:"Петарды",fx6:"Толчок — улетаю",fx7:"Удар сковородкой",fx8:"Кит",fx9:"Вечеринка",fx10:"Ноги в пляс",watch:"Смотреть эфир",watchS:"Подарки управляют стримером",ytS:"@fenomen_stream · шортсы со стримов",
       tgS:"Новости и анонсы стримов",foot:"© FENOMEN · Спасибо, что ты с нами ❤️",title:"FENOMEN — стримы, донаты и соцсети"},
-  en:{live:"Live every day on TikTok",liveNow:"LIVE now — watch",tap:"Tap the avatar",bam:"BONK!",bio:"Interactive stream: viewers influence the streamer, interact with them and control them live",
+  en:{live:"Live every day on TikTok",liveNow:"LIVE now — watch",tap:"TAP!",vibNote:"📳 For vibration: ⋯ → “Open in browser”",bam:"BONK!",bio:"Interactive stream: viewers influence the streamer, interact with them and control them live",
       donate:"Donate",paypal:"Donate with PayPal",paypalS:"Cards or PayPal balance",card:"Donate by card",cardS:"Tap to copy card number · •••• 0408",cardOk:"Card number copied ✓",
       mono:"Donate via Monobank",monoS:"Monobank jar (Ukraine)",tipply:"Donate via Tipply",tipplyS:"Card, PayPal, BLIK · your message shows on stream",
       follow:"Follow me",fxT:"What happens on stream",fxS:"Every effect is triggered by viewers",fx1:"Lightning & skeleton",fx2:"Bucket on the head",fx3:"Rain of roses",fx4:"UFO abduction",fx5:"Firecrackers",fx6:"Push — I fly away",fx7:"Frying pan hit",fx8:"Whale",fx9:"Party",fx10:"Dancing legs",watch:"Watch live",watchS:"Gifts control the streamer",ytS:"@fenomen_stream · stream shorts",
@@ -305,17 +321,32 @@ var TXT = {
   var isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 
   // --- вибрация ---
-  // Android: navigator.vibrate. iPhone (iOS 18+): системный тактильный «тик» переключателя (единственный способ для сайтов).
-  function iosTick(){
-    try{ var l=document.createElement('label'); l.setAttribute('aria-hidden','true'); l.style.display='none';
-      var i=document.createElement('input'); i.type='checkbox'; i.setAttribute('switch',''); l.appendChild(i);
-      document.head.appendChild(l); l.click(); document.head.removeChild(l) }catch(e){}
+  // Android (и браузер TikTok на Android): navigator.vibrate, узор целиком запускаем прямо в момент тапа.
+  // iPhone: у сайтов нет вибрации, есть только системный «тик» переключателя. Аватарка — это <label>
+  // со скрытым <input switch>: настоящий тап пальцем переключает его, и iPhone даёт тик (iOS 18+, в т.ч. 26.5+).
+  // На iOS 18–26.4 можно добавить ещё тиков скриптом (в течение ~1 с после тапа).
+  var canVibrate=typeof navigator.vibrate==='function';
+  var hasSwitch='switch' in HTMLInputElement.prototype;
+  var scriptTicks=(function(){ if(canVibrate||!hasSwitch) return false;
+    try{ var l=document.createElement('label'), i=document.createElement('input'), ok=false; i.type='checkbox'; l.appendChild(i);
+      i.addEventListener('click',function(e){ ok=e.isTrusted; e.preventDefault() }); l.click(); return ok }catch(e){ return false } })();
+  var tickLabel=null;
+  function iosTick(){ try{ if(!tickLabel){ tickLabel=document.createElement('label'); var i=document.createElement('input');
+      i.type='checkbox'; i.setAttribute('switch',''); tickLabel.appendChild(i) } tickLabel.click() }catch(e){} }
+  function buzz(p){ // p = [вибро, пауза, вибро, ...] в мс, отсчёт от момента тапа
+    if(canVibrate){ try{ navigator.vibrate(0); navigator.vibrate(p) }catch(e){} return }
+    if(!scriptTicks) return;  // iOS 26.5+: тик уже дал сам переключатель
+    var t=0; for(var i=0;i<p.length;i+=2){ if(t>0 && t<950) setTimeout(iosTick,t); t+=p[i]+(p[i+1]||0) }
   }
-  function tick(ms){ if(navigator.vibrate){ try{navigator.vibrate(ms||25)}catch(e){} } else if(isIOS){ iosTick() } }
-  function rhythm(p){ // p = [вибро, пауза, вибро, пауза, ...]
-    if(navigator.vibrate){ try{navigator.vibrate(p)}catch(e){} return }
-    if(!isIOS) return; var t=0; for(var i=0;i<p.length;i+=2){ if(t===0) iosTick(); else setTimeout(iosTick,t); t+=p[i]+(p[i+1]||0) }
-  }
+  function tick(){ if(canVibrate){ try{navigator.vibrate(40)}catch(e){} } }
+  function rhythm(){}  // узоры теперь задаются в VIB и запускаются сразу при тапе
+  var VIB=[
+    [45,95,45,95,45,95,45,95,90],              // молния: 5 ударов «тюф-тюф-тюф-тюф-тюф»
+    [30,600,160,70,45],                        // сковородка: замах… БАМ!
+    [30,530,90,60,50,60,35],                   // ведро: падает и звенит
+    [30,140,20,140,20,140,20],                 // розы: лёгкие касания
+    [30,300,60,240,60,240,80]                  // петарды: три хлопка
+  ];
 
   // --- помощники ---
   function rect(){ var r=ava.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,top:r.top} }
@@ -344,7 +375,6 @@ var TXT = {
   function dropBucketOff(){
     if(!bucketEl) return; var b=bucketEl; bucketEl=null;
     b.animate([{transform:getComputedStyle(b).transform},{transform:'translate(-50%,-10%) translate(70px,180px) rotate(230deg)',opacity:0}],{duration:650,easing:'ease-in',fill:'forwards'}).onfinish=function(){b.remove()};
-    tick(20);
   }
 
   var EFFECTS=[
@@ -379,27 +409,32 @@ var TXT = {
         var e=el('🧨',40); anim(e,[{transform:T(x,y,.6,-20)},{transform:T(x,y,1.15,10),offset:.6},{transform:T(x,y,.2,30),opacity:0}],380);
         setTimeout(function(){ burst({x:x,y:y,r:14},'💥',1,1,34); burst({x:x,y:y,r:14},'✨',5,46,14); react('boing',600) },330) },i*300) }) }
   ];
-  var fxIdx=0, lock=false;
+  var fxIdx=0, lock=false, hintT=0;
+  function hint(show){ ['tapHint','handL','handR'].forEach(function(id){ document.getElementById(id).classList.toggle('gone',!show) }) }
   function onTap(e){
-    if(e) e.preventDefault();
-    tick(18);                                                 // «тук» на каждое касание, как лайки в TikTok
-    if(lock) return; lock=true; setTimeout(function(){lock=false},700);
-    document.getElementById('tapHint').classList.add('gone'); document.getElementById('finger').classList.add('gone');
+    if(e && e.target && e.target.id==='hapSw') return;       // это «эхо» клика от переключателя — пропускаем
+    clearTimeout(hintT); hint(false); hintT=setTimeout(function(){ hint(true) }, 12000);  // подсказка вернётся, если долго не трогать
+    if(lock){ tick(); return }                                 // частые тапы — короткий «тук», как лайки
+    lock=true; setTimeout(function(){lock=false},700);
+    var i=fxIdx%EFFECTS.length; fxIdx++;
+    buzz(VIB[i]);
     var wasBucket=!!bucketEl; dropBucketOff();
-    var run=EFFECTS[fxIdx%EFFECTS.length]; fxIdx++;
-    setTimeout(run, wasBucket?250:0);
+    setTimeout(EFFECTS[i], wasBucket?250:0);
   }
+  // В браузере TikTok, если вибрации нет совсем, подсказываем открыть сайт в обычном браузере
+  var inTikTok=/musical_ly|BytedanceWebview|TikTok|trill/i.test(navigator.userAgent);
+  if(inTikTok && !canVibrate && !hasSwitch) document.getElementById('vibNote').classList.remove('hide');
   avaWrap.addEventListener('click',onTap);
 
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(es){ if(es[0].isIntersecting) begin() },{rootMargin:'300px 0px'}).observe(document.getElementById('fx'));
   } else { begin() }
 
-  // 5) «Сейчас в эфире»: статус пишет проверка на GitHub каждые ~10 минут в status.json
+  // 5) «Сейчас в эфире»: статус пишет проверка на GitHub (каждые 2 минуты) в status.json
   var LIVE_URL='https://raw.githubusercontent.com/taec432-maker/fenomen/main/status.json';
   function setLive(on){
     var b=document.getElementById('liveBadge'), t=document.getElementById('liveText');
-    b.classList.toggle('on',!!on); t.setAttribute('data-i', on?'liveNow':'live');
+    b.classList.toggle('on',!!on); document.body.classList.toggle('is-live',!!on); t.setAttribute('data-i', on?'liveNow':'live');
     var l=document.documentElement.lang==='en'?'en':'ru'; t.textContent=TXT[l][on?'liveNow':'live'];
   }
   function checkLive(){
@@ -408,28 +443,8 @@ var TXT = {
       setLive(j && j.live && fresh);
     }).catch(function(){ setLive(false) });
   }
-  checkLive(); setInterval(checkLive, 120000);
-
-  // 6) конфетти при нажатии на кнопки доната
-  var cv=document.getElementById('confetti'), cx=cv.getContext('2d'), parts=[], raf=0;
-  function fit(){ cv.width=innerWidth*devicePixelRatio; cv.height=innerHeight*devicePixelRatio }
-  fit(); addEventListener('resize',fit);
-  function boom(x,y){
-    if(calm) return;
-    var cols=['#ffc933','#ff2d55','#4fd1ff','#ffffff','#a66bff','#3ee08a'];
-    for(var i=0;i<90;i++){ var a=Math.random()*Math.PI*2, v=4+Math.random()*7;
-      parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-5,r:4+Math.random()*5,c:cols[i%cols.length],rot:Math.random()*6,vr:(Math.random()-.5)*.4,life:1}) }
-    if(!raf) raf=requestAnimationFrame(tick);
-  }
-  function tick(){
-    var k=devicePixelRatio; cx.clearRect(0,0,cv.width,cv.height);
-    parts.forEach(function(p){ p.x+=p.vx; p.y+=p.vy; p.vy+=.35; p.vx*=.98; p.rot+=p.vr; p.life-=.012;
-      cx.save(); cx.globalAlpha=Math.max(p.life,0); cx.translate(p.x*k,p.y*k); cx.rotate(p.rot); cx.fillStyle=p.c;
-      cx.fillRect(-p.r*k,-p.r*k*.45,p.r*2*k,p.r*.9*k); cx.restore() });
-    parts=parts.filter(function(p){return p.life>0 && p.y<innerHeight+40});
-    raf = parts.length ? requestAnimationFrame(tick) : 0;
-    if(!raf) cx.clearRect(0,0,cv.width,cv.height);
-  }
+  checkLive(); setInterval(checkLive, 60000);
+  if(/[?&]live=1/.test(location.search)) setTimeout(function(){ setLive(true) }, 300);  // для проверки вида
 
 })();
 </script>
