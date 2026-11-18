@@ -74,9 +74,7 @@
   .tile{position:relative;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#1d1030;
         border:1px solid rgba(255,201,51,.28);box-shadow:0 6px 18px rgba(0,0,0,.35);transform:translateZ(0)}
   .tile video,.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-  .tile video.back{visibility:hidden}
-  .tile video::-webkit-media-controls{display:none!important}
-  .tile video::-webkit-media-controls-start-playback-button{display:none!important}
+  .tile img.back{visibility:hidden}
   .tile{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 
   .tile::after{content:"";position:absolute;inset:auto 0 0 0;height:42%;background:linear-gradient(transparent,rgba(10,4,20,.88));pointer-events:none}
@@ -119,7 +117,7 @@
 </style>
 </head>
 <body>
-<div class="hero-bg" aria-hidden="true"><video id="heroVid" data-src="clips/hero.mp4" poster="clips/hero.jpg" muted loop playsinline preload="none"></video></div>
+<div class="hero-bg" aria-hidden="true"><img id="heroImg" src="clips/hero.jpg" data-src="clips/hero.webp" alt=""></div>
 <canvas id="confetti"></canvas>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 <main>
@@ -152,10 +150,10 @@
   <div class="sec"><span data-i="fxT">Что происходит на эфире</span></div>
   <p class="fx-sub" data-i="fxS">Каждый эффект запускают зрители</p>
   <div class="fx" id="fx">
-    <div class="tile"><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><div class="lab"><b></b><span></span></div></div>
-    <div class="tile"><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><div class="lab"><b></b><span></span></div></div>
-    <div class="tile"><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><div class="lab"><b></b><span></span></div></div>
-    <div class="tile"><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><video muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" preload="none" tabindex="-1" aria-hidden="true"></video><div class="lab"><b></b><span></span></div></div>
+    <div class="tile"><img alt="" draggable="false" decoding="async"><img alt="" draggable="false" decoding="async"><div class="lab"><b></b><span></span></div></div>
+    <div class="tile"><img alt="" draggable="false" decoding="async"><img alt="" draggable="false" decoding="async"><div class="lab"><b></b><span></span></div></div>
+    <div class="tile"><img alt="" draggable="false" decoding="async"><img alt="" draggable="false" decoding="async"><div class="lab"><b></b><span></span></div></div>
+    <div class="tile"><img alt="" draggable="false" decoding="async"><img alt="" draggable="false" decoding="async"><div class="lab"><b></b><span></span></div></div>
   </div>
 
   <div class="sec"><span data-i="follow">Мои страницы</span></div>
@@ -238,37 +236,35 @@ var TXT = {
              {n:'lightning',e:'⚡',k:'fx1'},{n:'push',e:'👋',k:'fx6'},{n:'pan',e:'🍳',k:'fx7'},{n:'whale',e:'🐋',k:'fx8'},
              {n:'party',e:'🪩',k:'fx9'},{n:'legs',e:'🦵',k:'fx10'}];
   var tiles=[].slice.call(document.querySelectorAll('#fx .tile'));
-  var visible=false;
+  var STEP=4000, timer=0, started=false;
   function lang(){return document.documentElement.lang==='en'?'en':'ru'}
-  function clip(i){return CLIPS[i%CLIPS.length]}
+  function clip(i){return CLIPS[((i%CLIPS.length)+CLIPS.length)%CLIPS.length]}
+  function file(c){return 'clips/'+c.n+(calm?'.jpg':'.webp')}
   function label(t,c){ t.querySelector('.lab b').textContent=c.e; var sp=t.querySelector('.lab span'); sp.setAttribute('data-i',c.k); sp.textContent=TXT[lang()][c.k] }
-  function load(v,c){ v.muted=true; v.defaultMuted=true; v.poster='clips/'+c.n+'.jpg'; v.preload='auto'; v.src='clips/'+c.n+'.mp4'; v.load() }
-  function tryPlay(v){ var p=v.play(); if(p&&p.catch)p.catch(function(){}) }
+  function preload(url){ var im=new Image(); im.src=url; if(im.decode) im.decode().catch(function(){}); return im }
   tiles.forEach(function(t,i){
-    var vs=t.querySelectorAll('video'); t._v=[vs[0],vs[1]]; t._cur=0; t._idx=i; t._started=false;
-    vs[1].classList.add('back'); vs[0].poster='clips/'+clip(i).n+'.jpg'; label(t,clip(i));
-    t._v.forEach(function(v){ v.addEventListener('ended',function(){ if(v===t._v[t._cur]) swap(t) }) });
-    ['click','dblclick','touchend','contextmenu'].forEach(function(ev){t.addEventListener(ev,function(e){e.preventDefault()},{passive:false})});
+    var ims=t.querySelectorAll('img'); t._im=[ims[0],ims[1]]; t._cur=0; t._idx=i;
+    ims[1].classList.add('back'); ims[0].src='clips/'+clip(i).n+'.jpg'; label(t,clip(i));
+    ['click','dblclick','touchend','contextmenu','dragstart'].forEach(function(ev){t.addEventListener(ev,function(e){e.preventDefault()},{passive:false})});
   });
-  function start(t){ if(t._started) return; t._started=true;
-    load(t._v[0],clip(t._idx)); load(t._v[1],clip(t._idx+tiles.length)); tryPlay(t._v[0]) }
+  function prep(t){ var nxt=t._im[1-t._cur]; var c=clip(t._idx+tiles.length); nxt.src=file(c); preload(nxt.src) }
   function swap(t){
-    var cur=t._v[t._cur], nxt=t._v[1-t._cur];
+    var cur=t._im[t._cur], nxt=t._im[1-t._cur];
     t._idx+=tiles.length; label(t,clip(t._idx));
-    nxt.classList.remove('back'); if(visible&&!calm) tryPlay(nxt);   // следующее уже загружено — показываем сразу
-    cur.classList.add('back'); cur.pause();
-    t._cur=1-t._cur;
-    load(cur,clip(t._idx+tiles.length));                              // и заранее грузим следующее за ним
+    nxt.classList.remove('back'); cur.classList.add('back'); t._cur=1-t._cur;
+    setTimeout(function(){ prep(t) }, 300);               // следующий эффект грузим заранее
   }
-  function playAll(on){ visible=on; tiles.forEach(function(t){
-    if(on&&!calm){ if(!t._started) start(t); else tryPlay(t._v[t._cur]) } else { t._v.forEach(function(v){v.pause()}) } }) }
+  function begin(){ if(started) return; started=true;
+    tiles.forEach(function(t){ t._im[0].src=file(clip(t._idx)); prep(t) });
+    if(!calm) timer=setInterval(function(){ tiles.forEach(swap) }, STEP);
+  }
   if('IntersectionObserver' in window){
-    new IntersectionObserver(function(es){ playAll(es[0].isIntersecting) },{rootMargin:'150px 0px'}).observe(document.getElementById('fx'));
-  } else { playAll(true) }
+    new IntersectionObserver(function(es){ if(es[0].isIntersecting) begin() },{rootMargin:'300px 0px'}).observe(document.getElementById('fx'));
+  } else { begin() }
 
-  // 4) видео-фон шапки
-  var hv=document.getElementById('heroVid');
-  if(!calm && hv){ hv.src=hv.getAttribute('data-src'); var hp=hv.play(); if(hp&&hp.catch)hp.catch(function(){}) }
+  // 4) анимированный фон шапки
+  var hi=document.getElementById('heroImg');
+  if(!calm && hi){ var hp=new Image(); hp.onload=function(){ hi.src=hp.src }; hp.src=hi.getAttribute('data-src') }
 
   // 5) «Сейчас в эфире»: статус пишет проверка на GitHub каждые ~10 минут в status.json
   var LIVE_URL='https://raw.githubusercontent.com/taec432-maker/fenomen/main/status.json';
