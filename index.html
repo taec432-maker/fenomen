@@ -230,6 +230,24 @@
 </main>
 
 <script>
+// Автообновление: телефон (особенно браузер TikTok) может показывать старую копию страницы.
+// При открытии сверяем номер версии с сервером и, если на сервере новее, подгружаем свежую страницу на месте.
+(function(){
+  var VER='2';
+  try{
+    fetch('version.json?'+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+      if(!j||!j.v||String(j.v)===VER) return;
+      var tried=null; try{ tried=sessionStorage.getItem('fn_upd') }catch(e){}
+      if(tried===String(j.v)) return;                       // уже пробовали эту версию — не зацикливаемся
+      try{ sessionStorage.setItem('fn_upd',String(j.v)) }catch(e){}
+      return fetch('index.html?'+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(h){
+        if(h && h.indexOf("VER='"+j.v+"'")>0){ document.open(); document.write(h); document.close() }
+      });
+    }).catch(function(){});
+  }catch(e){}
+})();
+</script>
+<script>
 /* ===== ССЫЛКИ НА ДОНАТЫ. Пустая строка = кнопка скрыта. ===== */
 var LINKS = {
   paypal: "https://paypal.me/Dobryak86",
@@ -422,7 +440,7 @@ var TXT = {
     setTimeout(EFFECTS[i], wasBucket?250:0);
   }
   // В браузере TikTok, если вибрации нет совсем, подсказываем открыть сайт в обычном браузере
-  var inTikTok=/musical_ly|BytedanceWebview|TikTok|trill/i.test(navigator.userAgent);
+  var inTikTok=/musical_ly|BytedanceWebview|TikTok|trill/i.test(navigator.userAgent)||/[?&]tt=1/.test(location.search);
   if(inTikTok && !canVibrate && !hasSwitch) document.getElementById('vibNote').classList.remove('hide');
   avaWrap.addEventListener('click',onTap);
 
@@ -445,6 +463,19 @@ var TXT = {
   }
   checkLive(); setInterval(checkLive, 60000);
   if(/[?&]live=1/.test(location.search)) setTimeout(function(){ setLive(true) }, 300);  // для проверки вида
+
+  // 8) внутри TikTok: гостям TikTok не даёт уйти с первой страницы сайта обычной ссылкой
+  //    (экран «Откройте ссылку в браузере»). Проверено на телефоне: работают внутренние ссылки TikTok —
+  //      snssdk1233://webview?url=…      любая страница в новом окне TikTok (PayPal, банка, Telegram…)
+  //      snssdk1233://user/profile/<id>  профиль в TikTok
+  if(inTikTok){
+    var MY_TT='7287145448320697377';                          // числовой id профиля @_heart995
+    document.querySelectorAll('a[href^="http"]').forEach(function(a){
+      var u=a.href;
+      a.href = /(^|\.)tiktok\.com$/.test(a.hostname) ? 'snssdk1233://user/profile/'+MY_TT : 'snssdk1233://webview?url='+encodeURIComponent(u);
+      a.removeAttribute('target');
+    });
+  }
 
 })();
 </script>
